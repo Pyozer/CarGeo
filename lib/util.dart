@@ -14,3 +14,9 @@ double calcAngle(double wheelSize, double distDiff, double missingDist) {
   final firstPart = pow(missingDist, 2) + pow(wheelSize, 2) - pow(distDiff, 2);
   return acos(firstPart / (2 * missingDist * wheelSize)) * (180 / pi);
 }
+
+String degreeToMinute(double degrees) {
+  final d = degrees.toInt();
+  final m = ((degrees - d) * 60).toInt();
+  return "$d°$m'";
+}

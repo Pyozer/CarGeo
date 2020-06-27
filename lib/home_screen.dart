@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildWheel(String title, WheelSide side) {
     final titleStyle = Theme.of(context).textTheme.headline6;
-
+    final angle = _calculWheelAngle(side);
     return Expanded(
       child: CustomCard(
         children: [
@@ -67,7 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 16.0),
           Text('Diff: ${_calculDiff(side)}'),
           const SizedBox(height: 4.0),
-          Text('Angle: ${_calculWheelAngle(side)}°'),
+          Text('Degrees: $angle°'),
+          const SizedBox(height: 4.0),
+          Text('Angle: ${degreeToMinute(angle)}'),
           const SizedBox(height: 16.0),
           _buildTextfield('Front distance', side, false),
           const SizedBox(height: 12.0),
