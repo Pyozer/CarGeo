@@ -1,19 +1,42 @@
+import 'dart:convert';
+
 import 'package:GeoCar/card.dart';
 import 'package:GeoCar/util.dart';
 import 'package:GeoCar/wheel.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
+  final SharedPreferences prefs;
+
+  const HomeScreen({Key key, this.prefs}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final frontLeft = Wheel(0.0, 0.0);
-  final frontRight = Wheel(0.0, 0.0);
-  final rearLeft = Wheel(0.0, 0.0);
-  final rearRight = Wheel(0.0, 0.0);
+  Wheel frontLeft = Wheel(0.0, 0.0);
+  Wheel frontRight = Wheel(0.0, 0.0);
+  Wheel rearLeft = Wheel(0.0, 0.0);
+  Wheel rearRight = Wheel(0.0, 0.0);
   double wheelSize = 41.5;
+
+  @override
+  void initState() {
+    super.initState();
+    initSavedValues();
+  }
+
+  void initSavedValues() {
+    frontLeft = jsonToWheel(widget.prefs.getString('${WheelSide.FRONT_LEFT}'));
+    frontRight = jsonToWheel(
+      widget.prefs.getString('${WheelSide.FRONT_RIGHT}'),
+    );
+    rearLeft = jsonToWheel(widget.prefs.getString('${WheelSide.REAR_LEFT}'));
+    rearRight = jsonToWheel(widget.prefs.getString('${WheelSide.REAR_RIGHT}'));
+    wheelSize = widget.prefs.getDouble('wheelSize') ?? 41.5;
+  }
 
   Wheel getWheel(WheelSide side) {
     if (side == WheelSide.FRONT_LEFT) return frontLeft;
@@ -31,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         wheel.frontDistance = value;
       }
     });
+    widget.prefs.setString('$side', json.encode(wheel));
   }
 
   double _calculWheelAngle(WheelSide side) {
@@ -44,7 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
   double _calculDiff(WheelSide side) => roundDecimal(getWheel(side).diff, 2);
 
   Widget _buildTextfield(String hint, WheelSide side, bool isBack) {
-    return TextField(
+    final wheel = getWheel(side);
+    return TextFormField(
+      initialValue: '${isBack ? wheel.backDistance : wheel.frontDistance}',
       decoration: InputDecoration(labelText: hint),
       keyboardType: TextInputType.number,
       onChanged: (value) {
@@ -95,7 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: InputDecoration(labelText: 'Wheel size'),
               keyboardType: TextInputType.number,
               onChanged: (value) {
-                setState(() => wheelSize = double.parse(value));
+                final wheelSize = double.parse(value);
+                widget.prefs.setDouble('wheelSize', wheelSize);
+                setState(() => this.wheelSize = wheelSize);
               },
             ),
           ),

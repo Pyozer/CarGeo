@@ -1,6 +1,6 @@
-
 import 'package:GeoCar/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class App extends StatelessWidget {
   @override
@@ -11,7 +11,13 @@ class App extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      home: FutureBuilder<SharedPreferences>(
+        future: SharedPreferences.getInstance(),
+        builder: (context, snap) {
+          if (!snap.hasData) return SizedBox();
+          return HomeScreen(prefs: snap.data);
+        },
+      ),
     );
   }
 }

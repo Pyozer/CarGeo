@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'dart:math';
+
+import 'package:GeoCar/wheel.dart';
 
 double roundDecimal(double value, int maxDecimal) {
   return double.parse(value.toStringAsFixed(maxDecimal));
@@ -16,7 +19,16 @@ double calcAngle(double wheelSize, double distDiff, double missingDist) {
 }
 
 String degreeToMinute(double degrees) {
-  final d = degrees.toInt();
-  final m = ((degrees - d) * 60).toInt();
-  return "$d°$m'";
+  try {
+    final d = degrees.toInt();
+    final m = ((degrees - d) * 60).toInt();
+    return "$d°$m'";
+  } catch (_) {
+    return "Error";
+  }
+}
+
+Wheel jsonToWheel(String jsonValue) {
+  return Wheel.fromJson(
+      json.decode((jsonValue ?? '{}')) as Map<String, dynamic>);
 }
